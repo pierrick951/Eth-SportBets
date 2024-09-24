@@ -1,28 +1,23 @@
-import { http, cookieStorage, createConfig, createStorage } from 'wagmi'
-import { mainnet, sepolia } from 'wagmi/chains'
-import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors'
+import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+import {
+  arbitrum,
+  base,
+  mainnet,
+  optimism,
+  polygon,
+  sepolia,
+} from 'wagmi/chains';
 
-export function getConfig() {
-  return createConfig({
-    chains: [mainnet, sepolia],
-    connectors: [
-      injected(),
-      coinbaseWallet(),
-      walletConnect({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID }),
-    ],
-    storage: createStorage({
-      storage: cookieStorage,
-    }),
-    ssr: true,
-    transports: {
-      [mainnet.id]: http(),
-      [sepolia.id]: http(),
-    },
-  })
-}
-
-declare module 'wagmi' {
-  interface Register {
-    config: ReturnType<typeof getConfig>
-  }
-}
+export const config = getDefaultConfig({
+  appName: 'RainbowKit App',
+  projectId: 'YOUR_PROJECT_ID',
+  chains: [
+    mainnet,
+    polygon,
+    optimism,
+    arbitrum,
+    base,
+    ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true' ? [sepolia] : []),
+  ],
+  ssr: true,
+});
